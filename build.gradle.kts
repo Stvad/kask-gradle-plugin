@@ -19,6 +19,8 @@ dependencies {
     compile(kotlin("stdlib-jdk8"))
 
     implementation("org.stvad", "kask", "0.1.0")
+
+    testCompile("io.kotlintest:kotlintest-runner-junit5:3.1.9")
 }
 
 configure<JavaPluginConvention> {
@@ -27,6 +29,10 @@ configure<JavaPluginConvention> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+val test by tasks.getting(Test::class) {
+    useJUnitPlatform { }
 }
 
 gradlePlugin {
