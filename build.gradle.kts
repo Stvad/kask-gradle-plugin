@@ -6,6 +6,7 @@ plugins {
 
     `java-gradle-plugin`
     `maven-publish`
+    id("com.gradle.plugin-publish") version "0.10.0"
 }
 
 group = "org.stvad"
@@ -36,10 +37,12 @@ val test by tasks.getting(Test::class) {
 }
 
 gradlePlugin {
-    plugins.invoke {
-        "kask" {
+    plugins {
+        create("kask") {
             id = "org.stvad.kask"
             implementationClass = "org.stvad.kask.gradle.KaskGeneratorGradlePlugin"
+            displayName = "Plugin that allows you to generate a Kotlin representation of your Alexa model"
+            description = "Kask plugin allows you to generate a Kotlin representation for various parts of your Alexa model (Intents, Slots, etc)."
         }
     }
 }
@@ -48,4 +51,10 @@ publishing {
     repositories {
         maven(url = "build/repository")
     }
+}
+
+pluginBundle {
+    website = "https://github.com/Stvad/kask"
+    vcsUrl = "https://github.com/Stvad/kask-gradle-plugin"
+    tags = listOf("alexa", "code-generation", "model", "kotlin", "skill")
 }
