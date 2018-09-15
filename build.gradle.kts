@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.2.60"
+    kotlin("jvm") version "1.2.70"
 
     `java-gradle-plugin`
     `maven-publish`
@@ -14,12 +14,13 @@ version = "0.1.0"
 
 repositories {
     jcenter()
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
 
-    implementation("org.stvad", "kask", "0.1.0")
+    implementation("com.github.Stvad:kask:-SNAPSHOT")
 
     testCompile("io.kotlintest:kotlintest-runner-junit5:3.1.9")
 }
@@ -49,7 +50,7 @@ gradlePlugin {
 
 publishing {
     repositories {
-        maven(url = "build/repository")
+        maven(url = "$buildDir/repository")
     }
 }
 
