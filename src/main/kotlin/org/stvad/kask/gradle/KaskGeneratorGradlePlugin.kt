@@ -4,8 +4,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.SourceSetContainer
+import java.net.URI
 
 
 class KaskGeneratorGradlePlugin : Plugin<Project> {
@@ -17,23 +18,45 @@ class KaskGeneratorGradlePlugin : Plugin<Project> {
                     .map { it.dir("main") }
     }
 
-    override fun apply(target: Project?) {
-        target ?: throw IllegalStateException("Project is not supposed to be null")
+    private lateinit var project: Project
 
-        val kask = target.tasks.create("kask", Kask::class.java) {
-            it.outputDirectory.set(target.generatedOutput)
-        }
+    override fun apply(target: Project) {
+        project = target
 
-        registerSources(target, kask)
+        val kask = createKaskTask()
+        configureDependencies()
+        registerGeneratedSources(kask)
     }
 
-    private fun registerSources(project: Project, kask: Kask?) {
-        project.plugins.apply(JavaPlugin::class.java)
+    private fun createKaskTask() =
+            project.tasks.create("kask", Kask::class.java) {
+                it.outputDirectory.set(project.generatedOutput)
+            }
 
-        val javaPlugin = project.convention.getPlugin(JavaPluginConvention::class.java)
-        javaPlugin.sourceSets.all {
-            it.output.dir(mapOf("builtBy" to kask), project.generatedOutput)
-            it.java.srcDir(project.generatedOutput)
+    private fun configureDependencies() {
+        addJitpackRepository()
+        addKaskDependencies()
+    }
+
+    private fun addJitpackRepository() =
+            project.repositories.maven {
+                it.url = URI("https://jitpack.io")
+                it.name = "jitpack"
+            }
+
+    private fun addKaskDependencies() {
+        addJavaPlugin()
+        project.dependencies.add("implementation", "com.github.Stvad:kask:-SNAPSHOT") //todo version
+    }
+
+    private fun addJavaPlugin() = project.plugins.apply(JavaPlugin::class.java)
+
+    private fun registerGeneratedSources(kask: Kask) {
+        val sources = project.properties["sourceSets"] as SourceSetContainer
+
+        sources.getByName("main").apply {
+            output.dir(mapOf("builtBy" to kask), project.generatedOutput)
+            java.srcDir(project.generatedOutput)
         }
     }
 }
