@@ -11,6 +11,7 @@ import java.net.URI
 
 class KaskGeneratorGradlePlugin : Plugin<Project> {
     companion object {
+        const val kaskVersion = "0.1.+"
         val Project.generatedOutput: Provider<Directory>
             get() = layout.buildDirectory.dir("generated")
                     .map { it.dir("source") }
@@ -46,7 +47,7 @@ class KaskGeneratorGradlePlugin : Plugin<Project> {
 
     private fun addKaskDependencies() {
         addJavaPlugin()
-        project.dependencies.add("implementation", "com.github.Stvad:kask:-SNAPSHOT") //todo version
+        project.dependencies.add("implementation", "com.github.Stvad:kask:$kaskVersion")
     }
 
     private fun addJavaPlugin() = project.plugins.apply(JavaPlugin::class.java)
