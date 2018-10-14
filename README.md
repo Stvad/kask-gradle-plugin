@@ -1,2 +1,4 @@
-# kask-gradle-plugin
-A gradle plugin to do the Alexa model code generation.
+# Kask Gradle code generation plugin
+
+A gradle plugin to do the code generation based on Alexa model.   
+See more here: https://github.com/Stvad/kask
