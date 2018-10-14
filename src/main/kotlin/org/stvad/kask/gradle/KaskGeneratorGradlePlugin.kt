@@ -25,16 +25,19 @@ class KaskGeneratorGradlePlugin : Plugin<Project> {
         project = target
 
         val kask = createKaskTask()
-        configureDependencies()
+        configureProjectDependencies()
+        configureTaskDependencies(kask)
         registerGeneratedSources(kask)
     }
 
-    private fun createKaskTask() =
-            project.tasks.create("kask", Kask::class.java) {
-                it.outputDirectory.set(project.generatedOutput)
-            }
+    private fun configureTaskDependencies(kask: Kask) =
+            listOf("compileKotlin", "compileJava").forEach { project.tasks.findByName(it)?.dependsOn(kask) }
 
-    private fun configureDependencies() {
+    private fun createKaskTask() = project.tasks.create("kask", Kask::class.java) {
+        it.outputDirectory.set(project.generatedOutput)
+    }
+
+    private fun configureProjectDependencies() {
         addJitpackRepository()
         addKaskDependencies()
     }
